@@ -177,47 +177,118 @@ def drawDeadPieces():
             screen.blit(smallWhiteImages[pieceNames.index(capturedWhitePieces[j])],[600+30*(j-10),100 ])
         screen.blit(smallWhiteImages[pieceNames.index(capturedWhitePieces[j])],[600+30*j,70 ])
 
-def checkKing(): #To check if any king is in check [Incomplete]
-    whiteKingLoc = whitePiecesLocation[whitePieces.index('King')]
-    blackKingLoc = blackPiecesLocation[blackPieces.index('King')]
+# def checkKing(): #To check if any king is in check [Incomplete]
+#     whiteKingLoc = whitePiecesLocation[whitePieces.index('King')]
+#     blackKingLoc = blackPiecesLocation[blackPieces.index('King')]
+#     isCheck = 0
+#     #For White:
+#     allyPieces = whitePiecesLocation
+#     oppPieces = blackPiecesLocation
+#     oppPiecesNames = blackPieces
+#     # For Right boxes:
+#     for rightBox in range(column+1,9):
+#         Box = (row,rightBox)
+#         if (Box in allyPieces) or (Box in oppPieces):
+#             if (Box in oppPieces):
+#                 if oppPiecesNames[oppPieces.index(Box)]=="Rook" or oppPiecesNames[oppPieces.index(Box)]=="Queen":
+#                     isCheck = 1
+#             break
+#     # For Left boxes:
+#     for leftBox in range(column-1,0,-1):
+#         Box = (row,leftBox)
+#         if (Box in allyPieces) or (Box in oppPieces):
+#             if (Box in oppPieces):
+#                 if oppPiecesNames[oppPieces.index(Box)]=="Rook" or oppPiecesNames[oppPieces.index(Box)]=="Queen":
+#                     isCheck = 1
+#             break
+#     # For Top boxes:
+#     for topBox in range(row-1,0,-1):
+#         Box = (topBox,column)
+#         if (Box in allyPieces) or (Box in oppPieces):
+#             if (Box in oppPieces):
+#                 if oppPiecesNames[oppPieces.index(Box)]=="Rook" or oppPiecesNames[oppPieces.index(Box)]=="Queen":
+#                     isCheck = 1
+#             break
+#     # For Bottom boxes:
+#     for bottomBox in range(row+1,9):
+#         Box = (bottomBox,column)
+#         if (Box in allyPieces) or (Box in oppPieces):
+#             if (Box in oppPieces):
+#                 if oppPiecesNames[oppPieces.index(Box)]=="Rook" or oppPiecesNames[oppPieces.index(Box)]=="Queen":
+#                     isCheck = 1
+#             break
+#     return isCheck
+def checkKing(king_location, allyPieces, oppPieces, oppPiecesNames):
+    row, column = king_location
     isCheck = 0
-    #For White:
-    allyPieces = whitePiecesLocation
-    oppPieces = blackPiecesLocation
-    oppPiecesNames = blackPieces
-    # For Right boxes:
-    for rightBox in range(column+1,9):
-        Box = (row,rightBox)
-        if (Box in allyPieces) or (Box in oppPieces):
-            if (Box in oppPieces):
-                if oppPiecesNames[oppPieces.index(Box)]=="Rook" or oppPiecesNames[oppPieces.index(Box)]=="Queen":
+    
+    # Directions for straight moves (Rooks and Queens)
+    directions = [
+        (0, 1),  # Right
+        (0, -1),  # Left
+        (-1, 0),  # Up
+        (1, 0)   # Down
+    ]
+    
+    for direction in directions:
+        dx, dy = direction
+        x, y = row, column
+        
+        while 1 <= x <= 8 and 1 <= y <= 8:
+            x += dx
+            y += dy
+            Box = (x, y)
+            if Box in allyPieces:
+                break
+            if Box in oppPieces:
+                piece_index = oppPieces.index(Box)
+                if oppPiecesNames[piece_index] in ["Rook", "Queen"]:
                     isCheck = 1
-            break
-    # For Left boxes:
-    for leftBox in range(column-1,0,-1):
-        Box = (row,leftBox)
-        if (Box in allyPieces) or (Box in oppPieces):
-            if (Box in oppPieces):
-                if oppPiecesNames[oppPieces.index(Box)]=="Rook" or oppPiecesNames[oppPieces.index(Box)]=="Queen":
+                break
+
+    # Directions for diagonal moves (Bishops and Queens)
+    diagonal_directions = [
+        (-1, -1),  # Top Left
+        (-1, 1),   # Top Right
+        (1, -1),   # Bottom Left
+        (1, 1)     # Bottom Right
+    ]
+
+    for direction in diagonal_directions:
+        dx, dy = direction
+        x, y = row, column
+        
+        while 1 <= x <= 8 and 1 <= y <= 8:
+            x += dx
+            y += dy
+            Box = (x, y)
+            if Box in allyPieces:
+                break
+            if Box in oppPieces:
+                piece_index = oppPieces.index(Box)
+                if oppPiecesNames[piece_index] in ["Bishop", "Queen"]:
                     isCheck = 1
-            break
-    # For Top boxes:
-    for topBox in range(row-1,0,-1):
-        Box = (topBox,column)
-        if (Box in allyPieces) or (Box in oppPieces):
-            if (Box in oppPieces):
-                if oppPiecesNames[oppPieces.index(Box)]=="Rook" or oppPiecesNames[oppPieces.index(Box)]=="Queen":
-                    isCheck = 1
-            break
-    # For Bottom boxes:
-    for bottomBox in range(row+1,9):
-        Box = (bottomBox,column)
-        if (Box in allyPieces) or (Box in oppPieces):
-            if (Box in oppPieces):
-                if oppPiecesNames[oppPieces.index(Box)]=="Rook" or oppPiecesNames[oppPieces.index(Box)]=="Queen":
-                    isCheck = 1
-            break
+                break
+
+    # Check for Knight attacks (must check specific squares)
+    knight_moves = [
+        (-2, -1), (-2, 1),   # Up 2 Left 1, Up 2 Right 1
+        (-1, -2), (-1, 2),   # Up 1 Left 2, Up 1 Right 2
+        (1, -2), (1, 2),     # Down 1 Left 2, Down 1 Right 2
+        (2, -1), (2, 1)      # Down 2 Left 1, Down 2 Right 1
+    ]
+    
+    for move in knight_moves:
+        x, y = row + move[0], column + move[1]
+        Box = (x, y)
+        if Box in oppPieces:
+            piece_index = oppPieces.index(Box)
+            if oppPiecesNames[piece_index] == "Knight":
+                isCheck = 1
+                break
+
     return isCheck
+
 #Checking for Valid Moves:
 def checkValidMoves(pos,turn):
     validMoves = []
@@ -232,161 +303,378 @@ def checkValidMoves(pos,turn):
         oppPieces = whitePiecesLocation
         allyPieces = blackPiecesLocation
     match piece:
+        # case 'Pawn':
+        #     if turn==1: #White
+        #         if (row+1,column) not in oppPieces:
+        #             validMoves.append((row+1,column))
+        #         # if row==2: #Initial Double
+        #         #     if not ((row+1,column) in allyPieces) or ((row+1,column) in oppPieces):
+        #         #         validMoves.append((row+2,column))
+        #         if row == 2:  # White pawn initial move
+        #             if (row+1, column) not in allyPieces and (row+2, column) not in oppPieces:
+        #                 validMoves.append((row+2, column))
+        #         if (row+1,column+1) in oppPieces: #bottom right
+        #             validMoves.append((row+1,column+1))
+        #         if (row+1,column-1) in oppPieces: #bottom left
+        #             validMoves.append((row+1,column-1))
+        #     if turn==2: #Black
+        #         if (row+1,column) not in oppPieces:
+        #             validMoves.append((row-1,column))
+        #         if row==7: #Initial Double
+        #             if not (((row-1,column) in allyPieces) or ((row-1,column) in oppPieces)):
+        #                 validMoves.append((row-2,column))
+        #         if (row-1,column+1) in oppPieces: #top right
+        #             validMoves.append((row-1,column+1))
+        #         if (row-1,column-1) in oppPieces: #top left
+        #             validMoves.append((row-1,column-1))
         case 'Pawn':
-            if turn==1: #White
-                if (row+1,column) not in oppPieces:
-                    validMoves.append((row+1,column))
-                if row==2: #Initial Double
-                    if not ((row+1,column) in allyPieces) or ((row+1,column) in oppPieces):
-                        validMoves.append((row+2,column))
-                if (row+1,column+1) in oppPieces: #bottom right
-                    validMoves.append((row+1,column+1))
-                if (row+1,column-1) in oppPieces: #bottom left
-                    validMoves.append((row+1,column-1))
-            if turn==2: #Black
-                if (row+1,column) not in oppPieces:
-                    validMoves.append((row-1,column))
-                if row==7: #Initial Double
-                    if not (((row-1,column) in allyPieces) or ((row-1,column) in oppPieces)):
-                        validMoves.append((row-2,column))
-                if (row-1,column+1) in oppPieces: #top right
-                    validMoves.append((row-1,column+1))
-                if (row-1,column-1) in oppPieces: #top left
-                    validMoves.append((row-1,column-1))
+            if turn == 1:  # White's turn
+                # Forward move by 1 square
+                if (row + 1, column) not in allyPieces and (row + 1, column) not in oppPieces:
+                    validMoves.append((row + 1, column))
+
+                # Initial double move (only from row 2)
+                if row == 2:
+                    if (row + 1, column) not in allyPieces and (row + 1, column) not in oppPieces and (row + 2, column) not in allyPieces and (row + 2, column) not in oppPieces:
+                        validMoves.append((row + 2, column))
+
+                # Capture moves
+                if (row + 1, column + 1) in oppPieces:  # Capture on the bottom right diagonal
+                    validMoves.append((row + 1, column + 1))
+                if (row + 1, column - 1) in oppPieces:  # Capture on the bottom left diagonal
+                    validMoves.append((row + 1, column - 1))
+
+            if turn == 2:  # Black's turn
+                # Forward move by 1 square
+                if (row - 1, column) not in allyPieces and (row - 1, column) not in oppPieces:
+                    validMoves.append((row - 1, column))
+
+                # Initial double move (only from row 7)
+                if row == 7:
+                    if (row - 1, column) not in allyPieces and (row - 1, column) not in oppPieces and (row - 2, column) not in allyPieces and (row - 2, column) not in oppPieces:
+                        validMoves.append((row - 2, column))
+
+                # Capture moves
+                if (row - 1, column + 1) in oppPieces:  # Capture on the top right diagonal
+                    validMoves.append((row - 1, column + 1))
+                if (row - 1, column - 1) in oppPieces:  # Capture on the top left diagonal
+                    validMoves.append((row - 1, column - 1))
+
+        # case 'Rook':
+        #     # For Right boxes:
+        #     for rightBox in range(column+1,9):
+        #         Box = (row,rightBox)
+        #         validMoves.append(Box)
+        #         if (Box in allyPieces) or (Box in oppPieces):
+        #             break
+        #     # For Left boxes:
+        #     for leftBox in range(column-1,0,-1):
+        #         Box = (row,leftBox)
+        #         validMoves.append(Box)
+        #         if (Box in allyPieces) or (Box in oppPieces):
+        #             break
+        #     # For Top boxes:
+        #     for topBox in range(row-1,0,-1):
+        #         Box = (topBox,column)
+        #         validMoves.append(Box)
+        #         if (Box in allyPieces) or (Box in oppPieces):
+        #             break
+        #     # For Bottom boxes:
+        #     for bottomBox in range(row+1,9):
+        #         Box = (bottomBox,column)
+        #         validMoves.append(Box)
+        #         if (Box in allyPieces) or (Box in oppPieces):
+        #             break
         case 'Rook':
             # For Right boxes:
-            for rightBox in range(column+1,9):
-                Box = (row,rightBox)
+            for rightBox in range(column + 1, 9):
+                Box = (row, rightBox)
+                if Box in allyPieces:
+                    break  # Stop if blocked by an ally
                 validMoves.append(Box)
-                if (Box in allyPieces) or (Box in oppPieces):
-                    break
+                if Box in oppPieces:
+                    break  # Stop after capturing opponent
+
             # For Left boxes:
-            for leftBox in range(column-1,0,-1):
-                Box = (row,leftBox)
-                validMoves.append(Box)
-                if (Box in allyPieces) or (Box in oppPieces):
+            for leftBox in range(column - 1, 0, -1):
+                Box = (row, leftBox)
+                if Box in allyPieces:
                     break
+                validMoves.append(Box)
+                if Box in oppPieces:
+                    break
+
             # For Top boxes:
-            for topBox in range(row-1,0,-1):
-                Box = (topBox,column)
-                validMoves.append(Box)
-                if (Box in allyPieces) or (Box in oppPieces):
+            for topBox in range(row - 1, 0, -1):
+                Box = (topBox, column)
+                if Box in allyPieces:
                     break
+                validMoves.append(Box)
+                if Box in oppPieces:
+                    break
+
             # For Bottom boxes:
-            for bottomBox in range(row+1,9):
-                Box = (bottomBox,column)
-                validMoves.append(Box)
-                if (Box in allyPieces) or (Box in oppPieces):
+            for bottomBox in range(row + 1, 9):
+                Box = (bottomBox, column)
+                if Box in allyPieces:
                     break
+                validMoves.append(Box)
+                if Box in oppPieces:
+                    break
+
+        # case 'Knight':
+        #     validMoves.append((pos[0]+2,pos[1]+1))
+        #     validMoves.append((pos[0]+2,pos[1]-1))
+        #     validMoves.append((pos[0]-2,pos[1]+1))
+        #     validMoves.append((pos[0]-2,pos[1]-1))
+        #     validMoves.append((pos[0]+1,pos[1]+2))
+        #     validMoves.append((pos[0]+1,pos[1]-2))
+        #     validMoves.append((pos[0]-1,pos[1]+2))
+        #     validMoves.append((pos[0]-1,pos[1]-2))
         case 'Knight':
-            validMoves.append((pos[0]+2,pos[1]+1))
-            validMoves.append((pos[0]+2,pos[1]-1))
-            validMoves.append((pos[0]-2,pos[1]+1))
-            validMoves.append((pos[0]-2,pos[1]-1))
-            validMoves.append((pos[0]+1,pos[1]+2))
-            validMoves.append((pos[0]+1,pos[1]-2))
-            validMoves.append((pos[0]-1,pos[1]+2))
-            validMoves.append((pos[0]-1,pos[1]-2))
+            knightMoves = [(row+2, column+1), (row+2, column-1), (row-2, column+1), (row-2, column-1),
+                           (row+1, column+2), (row+1, column-2), (row-1, column+2), (row-1, column-2)]
+            for move in knightMoves:
+                if 1 <= move[0] <= 8 and 1 <= move[1] <= 8:  # Stay within the bounds of the board
+                    if move not in allyPieces:
+                        validMoves.append(move)
+
+        # case 'King':
+        #     validMoves.append((pos[0]+1,pos[1]))
+        #     validMoves.append((pos[0]+1,pos[1]-1))
+        #     validMoves.append((pos[0]+1,pos[1]+1))
+        #     validMoves.append((pos[0],pos[1]+1))
+        #     validMoves.append((pos[0]-1,pos[1]+1))
+        #     validMoves.append((pos[0],pos[1]-1))
+        #     validMoves.append((pos[0]-1,pos[1]-1))
+        #     validMoves.append((pos[0]-1,pos[1]))
         case 'King':
-            validMoves.append((pos[0]+1,pos[1]))
-            validMoves.append((pos[0]+1,pos[1]-1))
-            validMoves.append((pos[0]+1,pos[1]+1))
-            validMoves.append((pos[0],pos[1]+1))
-            validMoves.append((pos[0]-1,pos[1]+1))
-            validMoves.append((pos[0],pos[1]-1))
-            validMoves.append((pos[0]-1,pos[1]-1))
-            validMoves.append((pos[0]-1,pos[1]))
+            # Check all possible one-square movements
+            for drow in [-1, 0, 1]:  # -1, 0, 1 for vertical movement
+                for dcol in [-1, 0, 1]:  # -1, 0, 1 for horizontal movement
+                    if (drow, dcol) != (0, 0):  # Exclude the current position
+                        newRow, newCol = row + drow, column + dcol
+                        if 1 <= newRow <= 8 and 1 <= newCol <= 8:  # Within board limits
+                            Box = (newRow, newCol)
+                            if Box in allyPieces:
+                                continue  # Skip if it's occupied by an ally
+                            validMoves.append(Box)
+
+        # case 'Queen':
+        #     #For Plus Shaped Movements
+        #     # For Right boxes:
+        #     for rightBox in range(column+1,9):
+        #         Box = (row,rightBox)
+        #         validMoves.append(Box)
+        #         if (Box in allyPieces) or (Box in oppPieces):
+        #             break
+        #     # For Left boxes:
+        #     for leftBox in range(column-1,0,-1):
+        #         Box = (row,leftBox)
+        #         validMoves.append(Box)
+        #         if (Box in allyPieces) or (Box in oppPieces):
+        #             break
+        #     # For Top boxes:
+        #     for topBox in range(row-1,0,-1):
+        #         Box = (topBox,column)
+        #         validMoves.append(Box)
+        #         if (Box in allyPieces) or (Box in oppPieces):
+        #             break
+        #     # For Bottom boxes:
+        #     for bottomBox in range(row+1,9):
+        #         Box = (bottomBox,column)
+        #         validMoves.append(Box)
+        #         if (Box in allyPieces) or (Box in oppPieces):
+        #             break
+
+
+        #     # For Diagnols
+
+        #     #Top Left
+        #     tlBox= (row-1,column-1)
+        #     while tlBox[0]>0 and tlBox[1]>0:
+        #         validMoves.append(tlBox)
+        #         if (tlBox in allyPieces) or (tlBox in oppPieces):
+        #             break
+        #         tlBox = (tlBox[0]-1,tlBox[1]-1)
+        #     #Top Right
+        #     trBox= (row-1,column+1)
+        #     while trBox[0]>0 and trBox[1]<9:
+        #         validMoves.append(trBox)
+        #         if (trBox in allyPieces) or (trBox in oppPieces):
+        #             break
+        #         trBox = (trBox[0]-1,trBox[1]+1)
+
+        #     #Bottom Left
+        #     blBox= (row+1,column-1)
+        #     while blBox[0]<9 and blBox[1]>0:
+        #         validMoves.append(blBox)
+        #         if (blBox in allyPieces) or (blBox in oppPieces):
+        #             break
+        #         blBox = (blBox[0]+1,blBox[1]-1)
+
+        #     #Bottom Right
+        #     brBox= (row+1,column+1)
+        #     while brBox[0]<9 and brBox[1]<9:
+        #         validMoves.append(brBox)
+        #         if (brBox in allyPieces) or (brBox in oppPieces):
+        #             break
+        #         brBox = (brBox[0]+1,brBox[1]+1)
         case 'Queen':
-            #For Plus Shaped Movements
+            # For Plus Shaped Movements (Rook-like)
+            
             # For Right boxes:
-            for rightBox in range(column+1,9):
-                Box = (row,rightBox)
-                validMoves.append(Box)
-                if (Box in allyPieces) or (Box in oppPieces):
-                    break
+            for rightBox in range(column+1, 9):
+                Box = (row, rightBox)
+                if Box in allyPieces:
+                    break  # Blocked by ally, stop further movement
+                validMoves.append(Box)  # Add only if it's not blocked by an ally
+                if Box in oppPieces:
+                    break  # Capture opponent, but stop further movement after this
+
             # For Left boxes:
-            for leftBox in range(column-1,0,-1):
-                Box = (row,leftBox)
-                validMoves.append(Box)
-                if (Box in allyPieces) or (Box in oppPieces):
+            for leftBox in range(column-1, 0, -1):
+                Box = (row, leftBox)
+                if Box in allyPieces:
                     break
+                validMoves.append(Box)
+                if Box in oppPieces:
+                    break
+
             # For Top boxes:
-            for topBox in range(row-1,0,-1):
-                Box = (topBox,column)
-                validMoves.append(Box)
-                if (Box in allyPieces) or (Box in oppPieces):
+            for topBox in range(row-1, 0, -1):
+                Box = (topBox, column)
+                if Box in allyPieces:
                     break
+                validMoves.append(Box)
+                if Box in oppPieces:
+                    break
+
             # For Bottom boxes:
-            for bottomBox in range(row+1,9):
-                Box = (bottomBox,column)
+            for bottomBox in range(row+1, 9):
+                Box = (bottomBox, column)
+                if Box in allyPieces:
+                    break
                 validMoves.append(Box)
-                if (Box in allyPieces) or (Box in oppPieces):
+                if Box in oppPieces:
                     break
 
+            # For Diagonal Movements (Bishop-like)
 
-            # For Diagnols
-
-            #Top Left
-            tlBox= (row-1,column-1)
-            while tlBox[0]>0 and tlBox[1]>0:
+            # Top Left Diagonal
+            tlBox = (row-1, column-1)
+            while tlBox[0] > 0 and tlBox[1] > 0:  # Within board limits
+                if tlBox in allyPieces:
+                    break  # Blocked by ally
                 validMoves.append(tlBox)
-                if (tlBox in allyPieces) or (tlBox in oppPieces):
+                if tlBox in oppPieces:
+                    break  # Capture opponent and stop further movement
+                tlBox = (tlBox[0]-1, tlBox[1]-1)  # Move diagonally to the top-left
+
+            # Top Right Diagonal
+            trBox = (row-1, column+1)
+            while trBox[0] > 0 and trBox[1] < 9:
+                if trBox in allyPieces:
                     break
-                tlBox = (tlBox[0]-1,tlBox[1]-1)
-            #Top Right
-            trBox= (row-1,column+1)
-            while trBox[0]>0 and trBox[1]<9:
                 validMoves.append(trBox)
-                if (trBox in allyPieces) or (trBox in oppPieces):
+                if trBox in oppPieces:
                     break
-                trBox = (trBox[0]-1,trBox[1]+1)
+                trBox = (trBox[0]-1, trBox[1]+1)  # Move diagonally to the top-right
 
-            #Bottom Left
-            blBox= (row+1,column-1)
-            while blBox[0]<9 and blBox[1]>0:
+            # Bottom Left Diagonal
+            blBox = (row+1, column-1)
+            while blBox[0] < 9 and blBox[1] > 0:
+                if blBox in allyPieces:
+                    break
                 validMoves.append(blBox)
-                if (blBox in allyPieces) or (blBox in oppPieces):
+                if blBox in oppPieces:
                     break
-                blBox = (blBox[0]+1,blBox[1]-1)
+                blBox = (blBox[0]+1, blBox[1]-1)  # Move diagonally to the bottom-left
 
-            #Bottom Right
-            brBox= (row+1,column+1)
-            while brBox[0]<9 and brBox[1]<9:
-                validMoves.append(brBox)
-                if (brBox in allyPieces) or (brBox in oppPieces):
+            # Bottom Right Diagonal
+            brBox = (row+1, column+1)
+            while brBox[0] < 9 and brBox[1] < 9:
+                if brBox in allyPieces:
                     break
-                brBox = (brBox[0]+1,brBox[1]+1)
+                validMoves.append(brBox)
+                if brBox in oppPieces:
+                    break
+                brBox = (brBox[0]+1, brBox[1]+1)  # Move diagonally to the bottom-right
+
+
+        # case 'Bishop':
+        #     #Top Left
+        #     tlBox= (row-1,column-1)
+        #     while tlBox[0]>0 and tlBox[1]>0:
+        #         validMoves.append(tlBox)
+        #         if (tlBox in allyPieces) or (tlBox in oppPieces):
+        #             break
+        #         tlBox = (tlBox[0]-1,tlBox[1]-1)
+        #     #Top Right
+        #     trBox= (row-1,column+1)
+        #     while trBox[0]>0 and trBox[1]<9:
+        #         validMoves.append(trBox)
+        #         if (trBox in allyPieces) or (trBox in oppPieces):
+        #             break
+        #         trBox = (trBox[0]-1,trBox[1]+1)
+
+        #     #Bottom Left
+        #     blBox= (row+1,column-1)
+        #     while blBox[0]<9 and blBox[1]>0:
+        #         validMoves.append(blBox)
+        #         if (blBox in allyPieces) or (blBox in oppPieces):
+        #             break
+        #         blBox = (blBox[0]+1,blBox[1]-1)
+
+        #     #Bottom Right
+        #     brBox= (row+1,column+1)
+        #     while brBox[0]<9 and brBox[1]<9:
+        #         validMoves.append(brBox)
+        #         if (brBox in allyPieces) or (brBox in oppPieces):
+        #             break
+        #         brBox = (brBox[0]+1,brBox[1]+1).
+
         case 'Bishop':
-            #Top Left
-            tlBox= (row-1,column-1)
-            while tlBox[0]>0 and tlBox[1]>0:
+            # Top Left Diagonal
+            tlBox = (row - 1, column - 1)
+            while tlBox[0] > 0 and tlBox[1] > 0:  # Within board limits
+                if tlBox in allyPieces:
+                    break  # Stop if blocked by an ally
                 validMoves.append(tlBox)
-                if (tlBox in allyPieces) or (tlBox in oppPieces):
+                if tlBox in oppPieces:
+                    break  # Stop after capturing opponent
+                tlBox = (tlBox[0] - 1, tlBox[1] - 1)
+
+            # Top Right Diagonal
+            trBox = (row - 1, column + 1)
+            while trBox[0] > 0 and trBox[1] < 9:
+                if trBox in allyPieces:
                     break
-                tlBox = (tlBox[0]-1,tlBox[1]-1)
-            #Top Right
-            trBox= (row-1,column+1)
-            while trBox[0]>0 and trBox[1]<9:
                 validMoves.append(trBox)
-                if (trBox in allyPieces) or (trBox in oppPieces):
+                if trBox in oppPieces:
                     break
-                trBox = (trBox[0]-1,trBox[1]+1)
+                trBox = (trBox[0] - 1, trBox[1] + 1)
 
-            #Bottom Left
-            blBox= (row+1,column-1)
-            while blBox[0]<9 and blBox[1]>0:
+            # Bottom Left Diagonal
+            blBox = (row + 1, column - 1)
+            while blBox[0] < 9 and blBox[1] > 0:
+                if blBox in allyPieces:
+                    break
                 validMoves.append(blBox)
-                if (blBox in allyPieces) or (blBox in oppPieces):
+                if blBox in oppPieces:
                     break
-                blBox = (blBox[0]+1,blBox[1]-1)
+                blBox = (blBox[0] + 1, blBox[1] - 1)
 
-            #Bottom Right
-            brBox= (row+1,column+1)
-            while brBox[0]<9 and brBox[1]<9:
-                validMoves.append(brBox)
-                if (brBox in allyPieces) or (brBox in oppPieces):
+            # Bottom Right Diagonal
+            brBox = (row + 1, column + 1)
+            while brBox[0] < 9 and brBox[1] < 9:
+                if brBox in allyPieces:
                     break
-                brBox = (brBox[0]+1,brBox[1]+1)
+                validMoves.append(brBox)
+                if brBox in oppPieces:
+                    break
+                brBox = (brBox[0] + 1, brBox[1] + 1)
+
 
     return validMoves
 
