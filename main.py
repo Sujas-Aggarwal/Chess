@@ -1,12 +1,13 @@
 import pygame
+from pathlib import Path
 
 pygame.init()
 pygame.mixer.init()
 Width = 900
 Height = 600
 screen = pygame.display.set_mode([Width,Height])
-font = pygame.font.Font('Helvetica.ttf',20)
-bigFont = pygame.font.Font('helvetica-compressed-5871d14b6903a.otf',40)
+font = pygame.font.Font(Path('Helvetica.ttf'),20)
+bigFont = pygame.font.Font(Path('helvetica-compressed-5871d14b6903a.otf'),40)
 timer = pygame.time.Clock()
 pygame.display.set_caption("Chess!")
 fps = 60
@@ -64,18 +65,18 @@ validMoves=[]
 kingCheck = 0
 #if 1 then white in check, if 2 then black in check else none in check
 # Images:
-blackQueen = pygame.image.load('Assets/Bqueen.png')
-blackKing = pygame.image.load('Assets/Bking.png')
-blackRook = pygame.image.load('Assets/Brook.png')
-blackKnight = pygame.image.load('Assets/Bknight.png')
-blackBishop = pygame.image.load('Assets/Bbishop.png')
-blackPawn = pygame.image.load('Assets/Bpawn.png')
-whiteQueen = pygame.image.load('Assets/Wqueen.png')
-whiteKing = pygame.image.load('Assets/Wking.png')
-whiteRook = pygame.image.load('Assets/Wrook.png')
-whiteKnight = pygame.image.load('Assets/Wknight.png')
-whiteBishop = pygame.image.load('Assets/Wbishop.png')
-whitePawn = pygame.image.load('Assets/Wpawn.png')
+blackQueen = pygame.image.load(Path('Assets') / 'Bqueen.png')
+blackKing = pygame.image.load(Path('Assets') / 'Bking.png')
+blackRook = pygame.image.load(Path('Assets') / 'Brook.png')
+blackKnight = pygame.image.load(Path('Assets') / 'Bknight.png')
+blackBishop = pygame.image.load(Path('Assets') / 'Bbishop.png')
+blackPawn = pygame.image.load(Path('Assets') / 'Bpawn.png')
+whiteQueen = pygame.image.load(Path('Assets') / 'Wqueen.png')
+whiteKing = pygame.image.load(Path('Assets') / 'Wking.png')
+whiteRook = pygame.image.load(Path('Assets') / 'Wrook.png')
+whiteKnight = pygame.image.load(Path('Assets') / 'Wknight.png')
+whiteBishop = pygame.image.load(Path('Assets') / 'Wbishop.png')
+whitePawn = pygame.image.load(Path('Assets') / 'Wpawn.png')
 
 # Small Images:
 smallBlackQueen = pygame.transform.scale(blackQueen,(30,30))
@@ -99,10 +100,10 @@ pieceNames=['Bishop','King','Knight','Pawn','Queen','Rook'] #To Lookup Images Ba
 dialogs = ["Start Game","White's Turn","Black's Turn","White Won","Black Won","Draw","Stalemate"]
 
 # Sound Effects
-move = pygame.mixer.Sound('Assets\Sounds\pieceMove.mp3')
-capture = pygame.mixer.Sound('Assets\Sounds\capture.mp3')
-check = pygame.mixer.Sound('Assets\Sounds\checkKing.mp3')
-castle = pygame.mixer.Sound('Assets\Sounds\castle.mp3')
+move = pygame.mixer.Sound(Path('Assets') / 'Sounds' / 'pieceMove.mp3')
+capture = pygame.mixer.Sound(Path('Assets') / 'Sounds' / 'capture.mp3')
+check = pygame.mixer.Sound(Path('Assets') / 'Sounds' / 'checkKing.mp3')
+castle = pygame.mixer.Sound(Path('Assets') / 'Sounds' / 'castle.mp3')
 
 # Drawing Board:
 def drawBoard(): 
